@@ -1024,7 +1024,11 @@ def clifford_data_regression_energy(theta_values: list, sim: AerSimulator,
 # ===========================================================================
 
 def transpile_circuits(circuits, optimization_level: int = 1,
-                       coupling_map: list | None = None):
+                       coupling_map: list | None = None,
+                       backend = None):
+    if backend is not None:
+        return [transpile(c, backend, optimization_level=optimization_level)
+                for c in circuits]
     if coupling_map is None:
         coupling_map = CouplingMap([[0, 1]])
     elif isinstance(coupling_map, list):
@@ -1063,7 +1067,8 @@ def compute_energy(theta_values, backend_or_sim, shots: int,
     for tpl in logical_circuits:
         pv = {p: v for p, v in zip(params, theta_values) if p in tpl.parameters}
         bound.append(tpl.assign_parameters(pv))
-    transpiled = transpile_circuits(bound, optimization_level=1)
+    transpiled = transpile_circuits(bound, optimization_level=1,
+                                    backend=backend_or_sim if is_hardware else None)
     all_counts = run_in_chunks(transpiled, backend_or_sim, shots,
                                is_hardware=is_hardware)
     return energy_from_counts_all(all_counts, groups)
@@ -1076,7 +1081,8 @@ def compute_mitigated_energy(theta_values, backend_or_sim, shots: int,
     for tpl in logical_circuits:
         pv = {p: v for p, v in zip(params, theta_values) if p in tpl.parameters}
         bound.append(tpl.assign_parameters(pv))
-    transpiled = transpile_circuits(bound, optimization_level=1)
+    transpiled = transpile_circuits(bound, optimization_level=1,
+                                    backend=backend_or_sim if is_hardware else None)
     all_counts = run_in_chunks(transpiled, backend_or_sim, shots,
                                is_hardware=is_hardware)
     # Apply readout correction (simplex-projected)
@@ -1174,8 +1180,9 @@ def run_challenge(shots: int = 4096,
     print(f"{'='*80}\n")
 
     # ---- confusion matrix ----
-    print(f"Building readout confusion matrix ({cfg_label}, {shots} shots/cal)...")
-    M = build_confusion_matrix(backend, n_qubits=2, shots_per_cal=shots)
+    print(f"Building readout confusion matrix (run locally, free, {shots} shots/cal)...")
+    cal_sim = AerSimulator(noise_model=build_tuna17_noise_model()) if is_hardware else backend
+    M = build_confusion_matrix(cal_sim, n_qubits=2, shots_per_cal=shots)
 
     results: list[ExperimentResult] = []
 
@@ -1232,7 +1239,8 @@ def run_challenge(shots: int = 4096,
     for tpl in logical_circuits:
         pv = {p: v for p, v in zip(params, x_opt) if p in tpl.parameters}
         bound.append(tpl.assign_parameters(pv))
-    transpiled = transpile_circuits(bound, optimization_level=1)
+    transpiled = transpile_circuits(bound, optimization_level=1,
+                                    backend=backend if is_hardware else None)
     all_counts = run_in_chunks(transpiled, backend, shots,
                                is_hardware=is_hardware)
     e_raw = energy_from_counts_all(all_counts, groups)
@@ -1322,7 +1330,8 @@ def run_challenge(shots: int = 4096,
     # ---- Transpilation sweep ----
     print("\n--- Transpilation sweep (optimization levels 0, 1, 2, 3) ---")
     for opt_level in [0, 1, 2, 3]:
-        transpiled = transpile_circuits(bound, optimization_level=opt_level)
+        transpiled = transpile_circuits(bound, optimization_level=opt_level,
+                                        backend=backend if is_hardware else None)
         all_counts_t = run_in_chunks(transpiled, backend, shots,
                                      is_hardware=is_hardware)
         e_t = energy_from_counts_all(all_counts_t, groups)
@@ -1361,21 +1370,28 @@ def run_challenge(shots: int = 4096,
 
 def save_results(results: list[ExperimentResult], label: str) -> None:
     import os
-    json_path = os.path.join(os.path.expanduser("~"), f"h2_vqe_{label}_results.json")
-    csv_path = os.path.join(os.path.expanduser("~"), f"h2_vqe_{label}_results.csv")
-    with open(json_path, "w") as f:
-        json.dump([asdict(r) for r in results], f, indent=2)
-    with open(csv_path, "w", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["method", "transpile_level", "theta0", "theta1",
-                         "theta2", "theta3", "energy", "error_vs_optimal",
-                         "error_vs_hf", "shots", "notes"])
-        for r in results:
-            writer.writerow([r.method, r.transpile_level, r.theta0, r.theta1,
-                             r.theta2, r.theta3, r.energy,
-                             r.error_vs_optimal, r.error_vs_hf, r.shots,
-                             r.notes])
-    print(f"Results saved: {json_path}, {csv_path}")
+    target_dirs = [os.path.expanduser("~"), ".", os.path.dirname(__file__)]
+    saved = []
+    for d in target_dirs:
+        json_path = os.path.join(d, f"h2_vqe_{label}_results.json")
+        csv_path = os.path.join(d, f"h2_vqe_{label}_results.csv")
+        try:
+            with open(json_path, "w") as f:
+                json.dump([asdict(r) for r in results], f, indent=2)
+            with open(csv_path, "w", newline="") as f:
+                writer = csv.writer(f)
+                writer.writerow(["method", "transpile_level", "theta0", "theta1",
+                                 "theta2", "theta3", "energy", "error_vs_optimal",
+                                 "error_vs_hf", "shots", "notes"])
+                for r in results:
+                    writer.writerow([r.method, r.transpile_level, r.theta0, r.theta1,
+                                     r.theta2, r.theta3, r.energy,
+                                     r.error_vs_optimal, r.error_vs_hf, r.shots,
+                                     r.notes])
+            saved.append(json_path)
+        except Exception:
+            pass
+    print(f"Results saved: {saved}")
 
 
 if __name__ == "__main__":
