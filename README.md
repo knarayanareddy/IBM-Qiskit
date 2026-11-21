@@ -111,5 +111,25 @@ Interactive results viewer: [`h2_vqe_tuna17/h2_vqe_error_mitigation_dashboard.ht
 
 ---
 
+## 🏆 Challenge 2: Team Tuna Pentagon (Real Hardware Run)
+
+Located in [`challenge2_tuna_pentagon/`](./challenge2_tuna_pentagon):
+
+Executed live on Quantum Inspire's physical **Tuna-17** superconducting processor (27 batch jobs, 62 circuits, 253,952 shots, 583 s wall time).
+
+| Mitigation Stage | Tuna-17 Measured Energy (Ha) | Error vs. Exact | vs. Hartree-Fock | Error Reduced |
+| :--- | :---: | :---: | :---: | :---: |
+| **Raw Unmitigated Hardware** | $-1.04756 \pm 0.0031$ | $89.7\text{ mHa}$ | $+69.4\text{ mHa}$ | Baseline ($0\%$) |
+| **+ Readout Inversion (TREX)** | $-1.08167 \pm 0.0033$ | $55.6\text{ mHa}$ | $+35.3\text{ mHa}$ | $38.0\%$ |
+| **+ Symmetry Post-Selection ($ZZ=-1$)** | $-1.10851 \pm 0.0049$ | $28.8\text{ mHa}$ | $+8.5\text{ mHa}$ | $67.9\%$ ($96.3\%$ shots kept) |
+| **+ Zero-Noise Extrapolation (Linear)** | **$-1.12026 \pm 0.0065$** | **$17.0\text{ mHa}$** | **$-3.3\text{ mHa}$ (Beats HF)** | **$81.0\%$** |
+| **+ Zero-Noise Extrapolation (Richardson)** | $-1.10446 \pm 0.0095$ | $32.8\text{ mHa}$ | $+12.5\text{ mHa}$ | $63.4\%$ ($0.8\text{ mHa}$ in sim) |
+
+- **Slide Deck & Answers**: [`challenge2_tuna_pentagon/PITCH_DECK.md`](./challenge2_tuna_pentagon/PITCH_DECK.md)
+- **Interactive Presentation**: [`challenge2_tuna_pentagon/pitch_deck.html`](./challenge2_tuna_pentagon/pitch_deck.html)
+- **Mitigation Chart**: [`challenge2_tuna_pentagon/mitigation_results.png`](./challenge2_tuna_pentagon/mitigation_results.png)
+
+---
+
 ## 📄 License
 Apache-2.0
