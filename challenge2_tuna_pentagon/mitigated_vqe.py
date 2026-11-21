@@ -325,5 +325,7 @@ a2.axhline(1.6, color="k", ls=":", label="chemical accuracy")
 a2.set_ylabel("error vs exact (mHa)"); a2.legend(); a2.tick_params(axis="x", rotation=20)
 a2.set_title("Final parameters, mitigation step by step")
 plt.tight_layout(); plt.savefig("mitigation_results.png", dpi=150)
-if BACKEND_NAME != "aer-noisy":
+print("Saved mitigation plot: mitigation_results.png")
+import sys
+if BACKEND_NAME != "aer-noisy" and sys.stdout.isatty():
     plt.show()
