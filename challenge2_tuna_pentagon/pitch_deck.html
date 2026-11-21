@@ -72,9 +72,9 @@
     <p class="lead">Closing the $H_2$ VQE Error Gap on QInspire's Tuna-17 QPU with Zero Optimization Overhead.</p>
     <div class="grid-3" style="max-width: 900px;">
       <div class="card">
-        <h3>🏆 Chemical Accuracy</h3>
-        <div class="stat-val">0.8 mHa</div>
-        <div class="stat-sub">Error vs. Exact (Threshold: 1.6 mHa)</div>
+        <h3>🏆 QPU Error Reduced</h3>
+        <div class="stat-val">81.0%</div>
+        <div class="stat-sub">17.0 mHa on Tuna-17 (0.8 mHa in sim)</div>
       </div>
       <div class="card">
         <h3>🛡️ Zero Added Depth</h3>
@@ -84,7 +84,7 @@
       <div class="card">
         <h3>⚡ Real QPU Auth</h3>
         <div class="stat-val">Tuna-17</div>
-        <div class="stat-sub">Hardware validated in Delft</div>
+        <div class="stat-sub">Live execution verified in Delft</div>
       </div>
     </div>
   </div>
@@ -135,8 +135,8 @@
 
   <!-- SLIDE 4: RESULTS TABLE -->
   <div class="slide" id="slide-3">
-    <div class="badge">Experimental Results</div>
-    <h2>Step-by-Step Error Gap Closure</h2>
+    <div class="badge">Real Hardware Results · Tuna-17 QPU</div>
+    <h2>Step-by-Step Error Gap Closure on Tuna-17</h2>
     <table>
       <thead>
         <tr>
@@ -144,44 +144,44 @@
           <th>Energy (Ha)</th>
           <th>Error vs. Exact</th>
           <th>vs. Hartree-Fock</th>
-          <th>Chemical Accuracy</th>
+          <th>Outcome / Gain</th>
         </tr>
       </thead>
       <tbody>
         <tr>
-          <td><strong>Raw (Unmitigated)</strong></td>
-          <td>-1.02040</td>
-          <td style="color: var(--red);">116.9 mHa</td>
-          <td>+96.6 mHa</td>
-          <td><span class="tag tag-red">FAIL</span></td>
+          <td><strong>Raw (Unmitigated Hardware)</strong></td>
+          <td>-1.04756 ± 0.0031</td>
+          <td style="color: var(--red);">89.7 mHa</td>
+          <td>+69.4 mHa</td>
+          <td><span class="tag tag-red">NOISE FLOOR</span></td>
         </tr>
         <tr>
           <td><strong>+ Readout Inversion (TREX)</strong></td>
-          <td>-1.09459</td>
-          <td>42.7 mHa</td>
-          <td>+22.4 mHa</td>
-          <td><span class="tag tag-accent">63% REDUCED</span></td>
+          <td>-1.08167 ± 0.0033</td>
+          <td>55.6 mHa</td>
+          <td>+35.3 mHa</td>
+          <td><span class="tag tag-accent">38% REDUCED</span></td>
         </tr>
         <tr>
-          <td><strong>+ Symmetry Verification</strong></td>
-          <td>-1.12309</td>
-          <td>14.2 mHa</td>
-          <td style="color: var(--green); font-weight: 600;">-6.1 mHa (BEATS HF)</td>
-          <td><span class="tag tag-green">HF SURPASSED</span></td>
-        </tr>
-        <tr>
-          <td><strong>+ ZNE Linear</strong></td>
-          <td>-1.13757</td>
-          <td>-0.3 mHa</td>
-          <td style="color: var(--green);">-20.6 mHa</td>
-          <td><span class="tag tag-green">TARGET REACHED</span></td>
+          <td><strong>+ Symmetry Verification (ZZ=-1)</strong></td>
+          <td>-1.10851 ± 0.0049</td>
+          <td>28.8 mHa</td>
+          <td style="color: var(--yellow); font-weight: 600;">+8.5 mHa</td>
+          <td><span class="tag tag-accent">68% REDUCED (96.3% SHOTS)</span></td>
         </tr>
         <tr class="highlight">
+          <td><strong>+ ZNE Linear Extrapolation</strong></td>
+          <td>-1.12026 ± 0.0065</td>
+          <td style="color: var(--green); font-size: 1.1rem;">17.0 mHa</td>
+          <td style="color: var(--green); font-weight: 700;">-3.3 mHa (BEATS HF)</td>
+          <td><span class="tag tag-green">🏆 BEATS HARTREE-FOCK</span></td>
+        </tr>
+        <tr>
           <td><strong>+ ZNE Richardson Extrapolation</strong></td>
-          <td>-1.13649</td>
-          <td style="color: var(--green); font-size: 1.1rem;">0.8 mHa</td>
-          <td style="color: var(--green);">-19.5 mHa</td>
-          <td><span class="tag tag-green">🏆 0.8 mHa ACCURACY</span></td>
+          <td>-1.10446 ± 0.0095</td>
+          <td>32.8 mHa</td>
+          <td style="color: var(--yellow);">+12.5 mHa</td>
+          <td><span class="tag tag-accent">63% REDUCED (0.8 mHa in sim)</span></td>
         </tr>
       </tbody>
     </table>
@@ -197,11 +197,11 @@
           Our generated plot demonstrates smooth convergence across the 20 COBYLA iterations and clear stepwise progression toward the chemical accuracy corridor (dotted line at 1.6 mHa).
         </p>
         <div class="card" style="margin-bottom: 1rem;">
-          <h3>📊 Overhead Accounting</h3>
+          <h3>📊 Tuna-17 Hardware Overhead Accounting</h3>
           <p>• <strong>Readout calibration</strong>: 4 circuits (1 job)<br>
-             • <strong>VQE iterations</strong>: 40 circuits (20 jobs)<br>
-             • <strong>Final ZNE folds</strong>: 18 circuits (6 jobs)<br>
-             • <strong>Total shots</strong>: 253,952 shots | <strong>Wall clock</strong>: 1.0s emulator</p>
+             • <strong>VQE iterations</strong>: 40 circuits (20 jobs, 2 circuits/batch)<br>
+             • <strong>Final ZNE benchmark folds</strong>: 18 circuits (6 jobs)<br>
+             • <strong>Total shots</strong>: 253,952 shots | <strong>Wall clock</strong>: 583s live on Tuna-17</p>
         </div>
       </div>
       <div style="text-align: center;">
