@@ -8,7 +8,7 @@
 - **Title**: *Precision Chemistry on Noisy Superconducting Hardware*
 - **Subtitle**: Closing the Quantum Error Gap on QInspire Tuna-17 with Zero Optimization Overhead
 - **Team**: Tuna Pentagon (Challenge 2)
-- **Key Highlight**: Achieved **$0.8\text{ mHa}$ error vs. exact FCI ground truth** (surpassing the $1.6\text{ mHa}$ chemical accuracy threshold) while respecting all hackathon constraints (no depth added during optimization, 5 circuits/job ceiling).
+- **Key Highlight**: Achieved **$17.0\text{ mHa}$ error vs. exact FCI ground truth** directly on **Tuna-17 physical hardware** (reducing raw QPU error from $89.7\text{ mHa}$ by **$81\%$** down to correlation precision; simulation benchmarks reach $0.8\text{ mHa}$) while strictly adhering to all hackathon constraints (no depth added during optimization, $\le 5$ circuits/job ceiling).
 
 ---
 
@@ -44,15 +44,16 @@ We introduced a tiered mitigation pipeline that maximizes error suppression whil
 
 ---
 
-### Slide 4: Results & Step-by-Step Gap Closure
+### Slide 4: Results & Step-by-Step Gap Closure (Real Tuna-17 Hardware)
 
-| Stage | Measured Energy | Error vs. Exact | Chemical Accuracy ($\le 1.6\text{ mHa}$) |
+| Stage | Measured Energy | Error vs. Exact | Chemical Accuracy / Target |
 | :--- | :---: | :---: | :---: |
-| **Raw Unmitigated** | $-1.0204\text{ Ha}$ | $116.9\text{ mHa}$ | ❌ |
-| **+ Readout Calibration (TREX)** | $-1.0946\text{ Ha}$ | $42.7\text{ mHa}$ | ❌ (63% improvement) |
-| **+ Symmetry Verification** | $-1.1231\text{ Ha}$ | $14.2\text{ mHa}$ | ✅ Beats Hartree-Fock ($20.3\text{ mHa}$) |
-| **+ ZNE Linear Extrapolation** | $-1.1376\text{ Ha}$ | $-0.3\text{ mHa}$ | 🎯 Crosses FCI baseline |
-| **+ ZNE Richardson Extrapolation** | **$-1.1365\text{ Ha}$** | **$0.8\text{ mHa}$** | 🏆 **Chemical Accuracy Achieved** |
+| **Raw Unmitigated Hardware** | $-1.04756 \pm 0.0031\text{ Ha}$ | $89.7\text{ mHa}$ | ❌ Raw Noise Floor |
+| **+ Readout Calibration (TREX)** | $-1.08167 \pm 0.0033\text{ Ha}$ | $55.6\text{ mHa}$ | ❌ $38\%$ error eliminated |
+| **+ Symmetry Verification ($ZZ=-1$)** | $-1.10851 \pm 0.0049\text{ Ha}$ | $28.8\text{ mHa}$ | 🎯 Approaching Hartree-Fock (96.3% shots kept) |
+| **+ ZNE Linear Extrapolation** | **$-1.12026 \pm 0.0065\text{ Ha}$** | **$17.0\text{ mHa}$** | 🏆 **Beats Hartree-Fock Limit ($20.3\text{ mHa}$)** |
+| **+ ZNE Richardson Extrapolation** | $-1.10446 \pm 0.0095\text{ Ha}$ | $32.8\text{ mHa}$ | 🎯 $63.4\%$ error eliminated |
+*(Note: In local low-shot simulations, Richardson achieved $0.8\text{ mHa}$ chemical accuracy).*
 
 ---
 
@@ -66,8 +67,9 @@ We introduced a tiered mitigation pipeline that maximizes error suppression whil
    - Nearest-neighbor connectivity avoids SWAP routing. Qubits with lowest native $CZ$ infidelity directly prevent depolarizing error cascade.
 
 3. **Overhead Budget**:
-   - Total overhead: **$27$ jobs, $62$ circuits, $253\text{k}$ shots** ($1\text{ s}$ execution overhead on emulator, compliant with 5 circuits/job ceiling).
-   - Symmetry post-selection retained **$96.1\%$** of all measurement shots.
+   - Real hardware execution: **$27$ jobs, $62$ circuits, $253,952$ shots, $583\text{ s}$ total wall time**.
+   - Symmetry post-selection retained **$96.3\%$** of all measurement shots.
+   - Strictly conformed to Tuna-17 batch ceiling ($\le 5$ circuits/job) and $MAXITER=20$.
 
 4. **Scalability to Larger Molecules**:
    - Fermionic parity symmetries scale to $N$-qubit systems.
